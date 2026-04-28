@@ -204,7 +204,11 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 }
             )
             data = resp.json()
-            reply = data["choices"][0]["message"]["content"]
+            choices = data.get("choices", [])
+            if choices and choices[0].get("message", {}).get("content"):
+                reply = choices[0]["message"]["content"]
+            else:
+                reply = str(data)
         await update.message.reply_text(reply, reply_markup=MAIN_KEYBOARD)
     except Exception as e:
         await update.message.reply_text("Ошибка при анализе фото: " + str(e))
